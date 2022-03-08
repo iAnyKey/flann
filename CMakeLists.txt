@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.12)
 
 if(COMMAND cmake_policy)
     cmake_policy(SET CMP0003 NEW)
-    cmake_policy(SET CMP0054 OLD) #defererencing variables in if()
+    cmake_policy(SET CMP0054 NEW) #defererencing variables in if()
 endif(COMMAND cmake_policy)
 
 project(flann)
@@ -15,11 +15,11 @@ GET_OS_INFO()
 
 
 # detect if using the Clang compiler
-if("${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
+if(CMAKE_C_COMPILER_ID MATCHES "Clang")
   set(CMAKE_COMPILER_IS_CLANG 1)
 endif ()
 
-if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(CMAKE_COMPILER_IS_CLANGXX 1)
 endif ()
 
