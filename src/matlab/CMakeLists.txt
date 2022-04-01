@@ -5,6 +5,8 @@
 #ENDIF(WIN32)
 
 SET(MEX_NAME nearest_neighbors)
+cmake_policy(SET CMP0026 OLD) # FIXME: because of the line 19 (s. more <https://stackoverflow.com/questions/32197663/how-can-i-remove-the-the-location-property-may-not-be-read-from-target-error-i>)
+
 
 if(WIN32)
     find_program(MEX_CMD mex.bat)
@@ -16,6 +18,7 @@ endif()
 
 find_program(OCT_CMD mkoctfile)
 
+#FIXME: following lines are inappropriate usage of get_property and will cause an error, as soon as CMP0026 will be removed in cmake
 get_property(FLANN_LIB_LOCATION TARGET flann_s PROPERTY LOCATION)
 get_filename_component(FLANN_LIB_PATH ${FLANN_LIB_LOCATION} PATH)
 
@@ -48,7 +51,7 @@ if(MEX_CMD AND MEXEXT_CMD)
         ADD_CUSTOM_COMMAND(
             OUTPUT ${MEX_FILE}
             COMMAND ${MEX_REAL_CMD}
-            ARGS ${CMAKE_CURRENT_SOURCE_DIR}/${MEX_NAME}.cpp -I${PROJECT_SOURCE_DIR}/src/cpp -L${FLANN_LIB_PATH} -lflann_s ${MEX_BUILD_FLAGS}
+            ARGS ${CMAKE_CURRENT_SOURCE_DIR}/${MEX_NAME}.cpp -I${PROJECT_SOURCE_DIR}/src/cpp -L${FLANN_LIB_PATH} -DFLANN_STATIC -lflann_s -I${LZ4_INCLUDE_DIRS} -L${LZ4_LIBRARY_DIRS} -l${LZ4_LIBRARIES} ${MEX_BUILD_FLAGS}
             DEPENDS flann_s ${CMAKE_CURRENT_SOURCE_DIR}/${MEX_NAME}.cpp
             COMMENT "Building MEX extension ${MEX_FILE}"
         )
@@ -67,10 +70,11 @@ if(MEX_CMD AND MEXEXT_CMD)
     endif()
 elseif(OCT_CMD)
   SET(MEX_FILE ${CMAKE_CURRENT_BINARY_DIR}/${MEX_NAME}.mex)
+
   ADD_CUSTOM_COMMAND(
     OUTPUT ${MEX_FILE}
     COMMAND ${OCT_CMD}
-    ARGS ${CMAKE_CURRENT_SOURCE_DIR}/${MEX_NAME}.cpp -I${PROJECT_SOURCE_DIR}/src/cpp -L${FLANN_LIB_PATH} -DFLANN_STATIC -lflann_s -lgomp --mex
+    ARGS ${CMAKE_CURRENT_SOURCE_DIR}/${MEX_NAME}.cpp -I${PROJECT_SOURCE_DIR}/src/cpp -L${FLANN_LIB_PATH} -DFLANN_STATIC -lflann_s -I${LZ4_INCLUDE_DIRS} -L${LZ4_LIBRARY_DIRS} -l${LZ4_LIBRARIES} -lgomp --mex
     DEPENDS flann_s ${CMAKE_CURRENT_SOURCE_DIR}/${MEX_NAME}.cpp
     COMMENT "Building MEX extension ${MEX_FILE}"
     )

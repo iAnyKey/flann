@@ -1,28 +1,34 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.11)
 
+# set CMAKE policies
 if(COMMAND cmake_policy)
     cmake_policy(SET CMP0003 NEW)
+    cmake_policy(SET CMP0054 NEW) #defererencing variables in if()
 endif(COMMAND cmake_policy)
 
+# +++++++++++++++++++++++++++++++++
 project(flann)
-string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
+set(FLANN_VERSION           1.9.2)
+# +++++++++++++++++++++++++++++++++
 
+#include macro
 include(${PROJECT_SOURCE_DIR}/cmake/flann_utils.cmake)
-set(FLANN_VERSION 1.9.2)
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
+set(DOWNLOAD_DIR            "./downloads")
+
+string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 DISSECT_VERSION()
 GET_OS_INFO()
 
-
 # detect if using the Clang compiler
-if("${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
+if(CMAKE_C_COMPILER_ID MATCHES "Clang")
   set(CMAKE_COMPILER_IS_CLANG 1)
 endif ()
 
-if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(CMAKE_COMPILER_IS_CLANGXX 1)
 endif ()
-
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # Add an "uninstall" target
 CONFIGURE_FILE ("${PROJECT_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
@@ -49,9 +55,10 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 # set output path for tests
 set(TEST_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/test)
 
+#OPTIONS
 option(BUILD_C_BINDINGS "Build C bindings" ON)
 option(BUILD_PYTHON_BINDINGS "Build Python bindings" ON)
-option(BUILD_MATLAB_BINDINGS "Build Matlab bindings" ON)
+option(BUILD_MATLAB_BINDINGS "Build Matlab bindings" OFF) #FIXME: not buildable right now
 option(BUILD_CUDA_LIB "Build CUDA library" OFF)
 option(BUILD_EXAMPLES "Build examples" ON)
 option(BUILD_TESTS "Build tests" ON)
@@ -69,10 +76,10 @@ endif()
 
 # find python
 if (BUILD_PYTHON_BINDINGS)
-find_package(PythonInterp)
-if (NOT PYTHON_EXECUTABLE)
-    set(BUILD_PYTHON_BINDINGS OFF)
-endif()
+    find_package(PythonInterp)
+    if (NOT PYTHON_EXECUTABLE)
+        set(BUILD_PYTHON_BINDINGS OFF)
+    endif()
 endif()
 
 find_hdf5()
@@ -146,9 +153,13 @@ if (BUILD_CUDA_LIB)
     endif(CUDA_FOUND)
 endif(BUILD_CUDA_LIB)
 
+# pkg-config
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LZ4 REQUIRED liblz4)
+set(LZ4_LIBRARIES "liblz4") #FIXME for dome reason pkg_check_modules(LZ4 REQUIRED liblz4) results in wrong library name
+set(LZ4_LINK_LIBRARIES "liblz4") #FIXME for dome reason pkg_check_modules(LZ4 REQUIRED liblz4) results in wrong library name
 include_directories(${LZ4_INCLUDE_DIRS})
+link_directories(${LZ4_LIBRARY_DIRS})
 
 #set the C/C++ include path to the "include" directory
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/src/cpp)
