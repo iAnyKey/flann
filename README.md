@@ -67,7 +67,7 @@ In case if you have built `GTK` to have `pkg-config` in your system, it may be n
 Out of the `build` directory issue
 ```
    cmake .. -DPKG_CONFIG_ROOT="$pwd/gtk/gtk/x64/release/bin" -DPKG_CONFIG_EXECUTABLE="$pwd/gtk/gtk/x64/release/bin/pkg-config.exe"
-   cmake --build .
+   cmake --build . --config Release
 ```
 
 Installing FLANN
