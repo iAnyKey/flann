@@ -20,7 +20,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - run: ls
     #- uses: actions/checkout@v3
     #  with:
     #    repository: iAnyKey/gvsbuild
@@ -29,9 +28,9 @@ jobs:
     
     - name: Dependencies - Pkg-Config
       # builds GTK, which contains required dependencies pkg-config and lz4
-      working-directory: ${{github.workspace}}/build/gvsbuild
       run: |
         ls
+        mkdir -F ./build && cd build
         git clone https://github.com/iAnyKey/gvsbuild -b fix_vs2022build_lz4
         ls
         
