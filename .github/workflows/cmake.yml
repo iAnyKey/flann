@@ -32,8 +32,11 @@ jobs:
       # builds GTK, which contains required dependencies pkg-config and lz4
       working-directory: ${{github.workspace}}/build/gvsbuild
       run: |
-        git clone https://github.com/iAnyKey/gvsbuild -b fix_vs2022build_lz4 && cd ./gvsbuild
-        python ./build.py build --build-dir=$pwd\\..\\gtk -p=x64 --vs-ver=17 --msys-dir="$pwd\\..\\msys64" pkg-config lz4
+        git clone https://github.com/iAnyKey/gvsbuild -b fix_vs2022build_lz4
+        ls
+        
+     # cd ./gvsbuild
+    #python ./build.py build --build-dir=$pwd\\..\\gtk -p=x64 --vs-ver=17 --msys-dir="$pwd\\..\\msys64" pkg-config lz4
 
     #- name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
