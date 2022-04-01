@@ -57,7 +57,7 @@ set(TEST_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/test)
 
 #OPTIONS
 option(BUILD_C_BINDINGS "Build C bindings" ON)
-option(BUILD_PYTHON_BINDINGS "Build Python bindings" ON)
+option(BUILD_PYTHON_BINDINGS "Build Python bindings" OFF) #FIXME: not buildable right now
 option(BUILD_MATLAB_BINDINGS "Build Matlab bindings" OFF) #FIXME: not buildable right now
 option(BUILD_CUDA_LIB "Build CUDA library" OFF)
 option(BUILD_EXAMPLES "Build examples" ON)
