@@ -12,19 +12,15 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  build:
+  build-windows:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
-    #- uses: actions/checkout@v3
-    #  with:
-    #    repository: iAnyKey/gvsbuild
-    #    ref: fix_vs2022build_lz4
-    #    path: flann/build/gvsbuild
+    - name: checkout
+      uses: actions/checkout@v3
     
     - name: Dependencies - Pkg-Config
       # builds GTK, which contains required dependencies pkg-config and lz4
@@ -56,11 +52,11 @@ jobs:
       run: |
         cmake --install .
         cd ../out_aftifacts
-        tar -cvf my_files.tar.gz *       
+        tar -cvf ../flann_x64${{GITHUB_SHA}}.tar.gz *       
       
-    - name: upload artifacts
+    - name: upload-artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: my-artifact
-        path: ${{github.workspace}}/out_aftifacts/my_files.tar.gz
+        name: flann_x64${{GITHUB_SHA}}
+        path: ${{github.workspace}}/flann_x64${{GITHUB_SHA}}.tar.gz
       
