@@ -29,12 +29,23 @@ jobs:
         git clone https://github.com/iAnyKey/gvsbuild -b fix_vs2022build_lz4        
         cd ./gvsbuild
         python ./build.py build --build-dir=$pwd\\..\\gtk -p=x64 --vs-ver=17 pkg-config lz4
+        
+    - name: Dependencies - GTest
+      # builds and installs the most recent version of the google test
+      working-directory: ${{github.workspace}}/build
+      run: |
+        git clone git clone https://github.com/google/googletest.git
+        mkdir -F ./googletest/build && cd ./googletest/build
+        cmake .. --install-prefix=$pwd/../../GTest
+        cmake --build . --config Release
+        cmake --install .
+
 
     - name: Configure CMake for building FLANN
       working-directory: ${{github.workspace}}/build
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DPKG_CONFIG_EXECUTABLE="$pwd/gtk/gtk/x64/release/bin/pkg-config.exe" -DPKG_CONFIG_ROOT="$pwd/gtk/gtk/x64/release/bin" --install-prefix=$pwd/../out_aftifacts
+      run: cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DPKG_CONFIG_EXECUTABLE="$pwd/gtk/gtk/x64/release/bin/pkg-config.exe" -DPKG_CONFIG_ROOT="$pwd/gtk/gtk/x64/release/bin" -DGTEST_ROOT="$pwd/GTest" --install-prefix=$pwd/../out_aftifacts
 
     - name: Build
       working-directory: ${{github.workspace}}/build
@@ -52,11 +63,13 @@ jobs:
       run: |
         cmake --install .
         cd ../out_aftifacts
-        tar -cvf ../flann_x64_${GITHUB_SHA::7}.tar.gz *       
+        tar -cvf ../flann_x64_${github.sha::7}.tar.gz *  
+        ls ..
       
     - name: upload-artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: flann_x64_${GITHUB_SHA::7}
-        path: ${{github.workspace}}/flann_x64_${GITHUB_SHA::7}.tar.gz
+        name: flann_x64_${github.sha::7}
+        path: ${{github.workspace}}/flann_x64_${github.sha::7}.tar.gz
+        
       
