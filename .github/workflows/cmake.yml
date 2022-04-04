@@ -52,11 +52,11 @@ jobs:
       run: |
         cmake --install .
         cd ../out_aftifacts
-        tar -cvf ../flann_x64${{GITHUB_SHA}}.tar.gz *       
+        tar -cvf ../flann_x64_${GITHUB_SHA::7}.tar.gz *       
       
     - name: upload-artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: flann_x64${{GITHUB_SHA}}
-        path: ${{github.workspace}}/flann_x64${{GITHUB_SHA}}.tar.gz
+        name: flann_x64_${GITHUB_SHA::7}
+        path: ${{github.workspace}}/flann_x64_${GITHUB_SHA::7}.tar.gz
       
