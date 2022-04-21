@@ -1,4 +1,4 @@
-name: CMake
+name: wx64_CMake_build
 
 on:
   push:
