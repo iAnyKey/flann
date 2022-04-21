@@ -77,9 +77,10 @@ jobs:
       - name: download compiled artifacts
         uses: actions/download-artifact@v3
         with:
-          name: flann_x64_${{github.sha}}.tar.gz
+          name: flann_x64_${{github.sha}}
           
       - name: create new release
+        id: create_new_release
         uses: actions/create-release@v1
         with:
           draft:      true
