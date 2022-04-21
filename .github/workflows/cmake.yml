@@ -1,4 +1,4 @@
-name: wx64_CMake_build
+name: CMake_build & release
 
 on:
   push:
@@ -70,4 +70,28 @@ jobs:
         name: flann_x64_${{github.sha}}
         path: ${{github.workspace}}/flann_x64_${{github.sha}}.tar.gz
         
-      
+  publish-release:
+    runs-on: windows-latest
+    needs: build-windows
+    steps:
+      - name: download compiled artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: flann_x64_${{github.sha}}.tar.gz
+          
+      - name: create new release
+        uses: actions/create-release@v1
+        with:
+          draft:      true
+          prerelease: false
+          release_name:  test #${{ steps.version.outputs.version }}
+          tag_name: ${{ github.ref }}
+            
+      - name: upload windows artifact
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_new_release.outputs.upload_url }}
+          asset_path: flann_x64_${{github.sha}}.tar.gz
+          asset_name: flann_x64_${{github.sha}}.tar.gz
+          asset_content_type: application/zip
+
