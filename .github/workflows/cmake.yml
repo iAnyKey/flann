@@ -16,12 +16,12 @@ jobs:
   win_dependency-Pkg-Config:
     runs-on: windows-latest
     steps:
-    - name: checkout
+    - name: checkout gvsbuild
       uses: actions/checkout@v3
       with:
         repository: wingtk/gvsbuild
 
-    - name: build
+    - name: build gvsbuild
       # builds GTK, which contains required dependencies pkg-config and lz4
       working-directory: ${{github.workspace}}/gvsbuild
       run: 
@@ -37,12 +37,12 @@ jobs:
   win_dependency-GTest:
     runs-on: windows-latest
     steps:
-    - name: checkout
+    - name: checkout GTest
       uses: actions/checkout@v3
       with:
         repository: google/googletest
 
-    - name: build
+    - name: build GTest
       # builds and installs the most recent version of the google test
       working-directory: ${{github.workspace}}/googletest
       run: |
@@ -54,22 +54,17 @@ jobs:
         tree ${{github.workspace}}
 
   # ---[ WINDOWS BUILD ]---
-    build-windows:
-    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
-    # You can convert this to a matrix build if you need cross-platform coverage.
-    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+  build-windows:
+  # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
+  # You can convert this to a matrix build if you need cross-platform coverage.
+  # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: windows-latest
     needs: win_dependency-Pkg-Config
-           win_dependency-GTest
+          win_dependency-GTest
 
     steps:
     - name: checkout
       uses: actions/checkout@v3
-    
-
-        
-
-
 
     - name: Configure CMake for building FLANN
       working-directory: ${{github.workspace}}/build
@@ -100,7 +95,8 @@ jobs:
       with:
         name: flann_x64_${{github.sha}}
         path: ${{github.workspace}}/flann_x64_${{github.sha}}.tar.gz
-        
+  
+  # ---[ PUBLISH RELEASES ]---
   publish-release:
     runs-on: windows-latest
     needs: build-windows
