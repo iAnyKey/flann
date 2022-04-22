@@ -35,8 +35,9 @@ jobs:
       if: steps.cache-gvsbuild.outputs.cache-hit != 'true'
       # builds GTK, which contains required dependencies pkg-config and lz4
       working-directory: ${{github.workspace}}/gvsbuild
-      run:
-        python ./build.py build -p=x64 --build-dir="$pwd/../compiled_gvs" pkg-config lz4
+      run: |
+        python ./build.py build -p=x64 pkg-config lz4
+        tree ${{github.workspace}}
 
 #      |
 #        mkdir -F ./build && cd build
@@ -56,6 +57,7 @@ jobs:
         key: ${{ runner.os }}-gtest
 
     - name: checkout GTest
+      if: steps.cache-gtest.outputs.cache-hit != 'true'
       uses: actions/checkout@v3
       with:
         repository: google/googletest
