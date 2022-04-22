@@ -44,9 +44,9 @@ jobs:
 
     - name: build GTest
       # builds and installs the most recent version of the google test
+      #        git clone https://github.com/google/googletest.git
       working-directory: ${{github.workspace}}/googletest
       run: |
-#        git clone https://github.com/google/googletest.git
         mkdir -F ./build && cd ./build
         cmake .. --install-prefix=$pwd/../../GTest
         cmake --build . --config Release
