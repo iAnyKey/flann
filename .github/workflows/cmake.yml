@@ -9,35 +9,66 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE:   Release
-
+  
 jobs:
-  build-windows:
+  # ---[ WINDOWS DEPENDENCIES ]---
+  # Pkg-Config
+  win_dependency-Pkg-Config:
+    runs-on: windows-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3
+      with:
+        repository: wingtk/gvsbuild
+
+    - name: build
+      # builds GTK, which contains required dependencies pkg-config and lz4
+      working-directory: ${{github.workspace}}/gvsbuild
+      run: 
+        python ./build.py build -p=x64 --vs-ver=17 pkg-config lz4
+        tree ${{github.workspace}}
+#      |
+#        mkdir -F ./build && cd build
+#        git clone https://github.com/wingtk/gvsbuild        
+#        cd ./gvsbuild
+#        python ./build.py build --build-dir=$pwd\\..\\gtk -p=x64 --vs-ver=17 pkg-config lz4
+
+  # GTest
+  win_dependency-Pkg-Config:
+    runs-on: windows-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3
+      with:
+        repository: google/googletest
+
+    - name: build
+      # builds and installs the most recent version of the google test
+      working-directory: ${{github.workspace}}/googletest
+      run: |
+#        git clone https://github.com/google/googletest.git
+        mkdir -F ./build && cd ./build
+        cmake .. --install-prefix=$pwd/../../GTest
+        cmake --build . --config Release
+        cmake --install .
+        tree ${{github.workspace}}
+
+  # ---[ WINDOWS BUILD ]---
+    build-windows:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: windows-latest
+    needs: win_dependency-Pkg-Config
+           win_dependency-GTest
 
     steps:
     - name: checkout
       uses: actions/checkout@v3
     
-    - name: Dependencies - Pkg-Config
-      # builds GTK, which contains required dependencies pkg-config and lz4
-      run: |
-        mkdir -F ./build && cd build
-        git clone https://github.com/iAnyKey/gvsbuild -b fix_vs2022build_lz4        
-        cd ./gvsbuild
-        python ./build.py build --build-dir=$pwd\\..\\gtk -p=x64 --vs-ver=17 pkg-config lz4
+
         
-    - name: Dependencies - GTest
-      # builds and installs the most recent version of the google test
-      working-directory: ${{github.workspace}}/build
-      run: |
-        git clone https://github.com/google/googletest.git
-        mkdir -F ./googletest/build && cd ./googletest/build
-        cmake .. --install-prefix=$pwd/../../GTest
-        cmake --build . --config Release
-        cmake --install .
+
 
 
     - name: Configure CMake for building FLANN
