@@ -8,7 +8,7 @@ on:
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Release
+  BUILD_TYPE:   Release
 
 jobs:
   build-windows:
@@ -87,6 +87,8 @@ jobs:
           prerelease: false
           release_name:  test #${{ steps.version.outputs.version }}
           tag_name: ${{ github.ref }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
             
       - name: upload windows artifact
         uses: actions/upload-release-asset@v1
@@ -95,4 +97,6 @@ jobs:
           asset_path: flann_x64_${{github.sha}}.tar.gz
           asset_name: flann_x64_${{github.sha}}.tar.gz
           asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
