@@ -24,7 +24,7 @@ jobs:
     - name: build gvsbuild
       # builds GTK, which contains required dependencies pkg-config and lz4
       working-directory: ${{github.workspace}}/gvsbuild
-      run: 
+      run: |
         python ./build.py build -p=x64 --vs-ver=17 pkg-config lz4
         tree ${{github.workspace}}
 #      |
@@ -48,7 +48,7 @@ jobs:
       working-directory: ${{github.workspace}}/googletest
       run: |
         mkdir -F ./build && cd ./build
-        cmake .. --install-prefix=$pwd/../../GTest
+        cmake .. --install-prefix=${{github.workspace}}/GTest
         cmake --build . --config Release
         cmake --install .
         tree ${{github.workspace}}
