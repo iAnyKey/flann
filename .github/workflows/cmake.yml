@@ -20,7 +20,7 @@ jobs:
       id: cache-gvsbuild
       uses: actions/cache@v3
       with:
-        path: ${{github.workspace}}/compiled_gvs
+        path: ${{github.workspace}}/gtk
         key: ${{ runner.os }}-gvs
 
     - name: checkout gvsbuild
@@ -36,7 +36,7 @@ jobs:
       # builds GTK, which contains required dependencies pkg-config and lz4
       working-directory: ${{github.workspace}}/gvsbuild
       run: |
-        python ./build.py build -p=x64 pkg-config lz4
+        python ./build.py build --build-dir=${{github.workspace}}/gtk -p=x64 pkg-config lz4
         tree ${{github.workspace}}
 
 #      |
@@ -89,10 +89,11 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Configure CMake for building FLANN
-      working-directory: ${{github.workspace}}/build
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DPKG_CONFIG_EXECUTABLE="${{github.workspace}}/gvsbuild/gtk/x64/release/bin/pkg-config.exe" -DPKG_CONFIG_ROOT="${{github.workspace}}/gvsbuild/gtk/x64/release/bin" -DGTEST_ROOT="${{github.workspace}}/GTest" --install-prefix=$pwd/../out_aftifacts
+      run: |
+        mkdir -F ./build && cd build
+        cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DPKG_CONFIG_EXECUTABLE="${{github.workspace}}/gvsbuild/gtk/x64/release/bin/pkg-config.exe" -DPKG_CONFIG_ROOT="${{github.workspace}}/gvsbuild/gtk/x64/release/bin" -DGTEST_ROOT="${{github.workspace}}/GTest" --install-prefix=$pwd/../out_aftifacts
 
     - name: Build
       working-directory: ${{github.workspace}}/build
