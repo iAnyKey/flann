@@ -12,11 +12,11 @@ env:
   
 jobs:
   # ---[ WINDOWS DEPENDENCIES ]---
-  # Pkg-Config
+  # --  Pkg-Config  --
   win_dependency-Pkg-Config:
     runs-on: windows-latest
     steps:
-    - name: cache gvsbuild
+    - name: cache gvsbuild #TODO: Version based check
       id: cache-gvsbuild
       uses: actions/cache@v3
       with:
@@ -39,17 +39,12 @@ jobs:
         python ./build.py build --build-dir=${{github.workspace}}/gtk -p=x64 pkg-config lz4
         tree ${{github.workspace}}
 
-#      |
-#        mkdir -F ./build && cd build
-#        git clone https://github.com/wingtk/gvsbuild        
-#        cd ./gvsbuild
-#        python ./build.py build --build-dir=$pwd\\..\\gtk -p=x64 --vs-ver=17 pkg-config lz4
 
-  # GTest
+  # --  GTest  --
   win_dependency-GTest:
     runs-on: windows-latest
     steps:
-    - name: cache GTest
+    - name: cache GTest #TODO: Version based check
       id: cache-gtest
       uses: actions/cache@v3
       with:
@@ -93,7 +88,7 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
         mkdir -F ./build && cd build
-        cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DPKG_CONFIG_EXECUTABLE="${{github.workspace}}/gvsbuild/gtk/x64/release/bin/pkg-config.exe" -DPKG_CONFIG_ROOT="${{github.workspace}}/gvsbuild/gtk/x64/release/bin" -DGTEST_ROOT="${{github.workspace}}/GTest" --install-prefix=$pwd/../out_aftifacts
+        cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DPKG_CONFIG_EXECUTABLE="${{github.workspace}}/gtk/gtk/x64/release/bin/pkg-config.exe" -DPKG_CONFIG_ROOT="${{github.workspace}}/gtk/gtk/x64/release/bin" -DGTEST_ROOT="${{github.workspace}}/GTest" --install-prefix=$pwd/../out_aftifacts
 
     - name: Build
       working-directory: ${{github.workspace}}/build
