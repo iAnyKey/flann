@@ -34,7 +34,7 @@ jobs:
 #        python ./build.py build --build-dir=$pwd\\..\\gtk -p=x64 --vs-ver=17 pkg-config lz4
 
   # GTest
-  win_dependency-Pkg-Config:
+  win_dependency-GTest:
     runs-on: windows-latest
     steps:
     - name: checkout
