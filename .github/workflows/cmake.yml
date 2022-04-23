@@ -16,24 +16,17 @@ jobs:
   win_dependency-Pkg-Config:
     runs-on: windows-latest
     steps:
-    - name: Set the value
-      id: step_one
-      run: |
-        echo "action_state=yellow" >> $GITHUB_ENV
-    - name: Use the value
-      id: step_two
-      run: |
-        echo "${{ env.action_state }}" # This will output 'yellow'
-
     - name: retrieve current commit sha
-      id:   gvs_ver
       run: |
         $GVSBUILD_SHA=& git ls-remote https://github.com/wingtk/gvsbuild HEAD
         $GVSBUILD_SHA=$GVSBUILD_SHA.split()
         $GVSBUILD_SHA_SHORT=$GVSBUILD_SHA[0].Substring(0,6)
-        echo '::set-output name=GVSBUILD_SHA_SHORT::$GVSBUILD_SHA_SHORT'
+        echo "gvsbuild_sha_short=$GVSBUILD_SHA_SHORT" >> $GITHUB_ENV
         echo "restore key will be $GVSBUILD_SHA_SHORT"
-        echo ${{ runner.os }}-gvs-${{ steps.gvs_ver.outputs.GVSBUILD_SHA_SHORT }}
+
+    - name: test
+      run: echo ${{ runner.os }}-gvs-${{ env.gvsbuild_sha_short }}
+
 
     - name: cache gvsbuild
       id: cache-gvsbuild
