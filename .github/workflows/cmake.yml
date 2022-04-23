@@ -17,12 +17,14 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: retrieve current commit sha
+      id:   gvs_ver
       run: |
         $GVSBUILD_SHA=& git ls-remote https://github.com/wingtk/gvsbuild HEAD
         $GVSBUILD_SHA=$GVSBUILD_SHA.split()
         $GVSBUILD_SHA_SHORT=$GVSBUILD_SHA[0].Substring(0,6)
-        echo "GVSBUILD_SHA_SHORT=$GVSBUILD_SHA_SHORT" >> $GITHUB_ENV
-        echo ${{ runner.os }}-gvs-${{ env.GVSBUILD_SHA_SHORT }}
+        echo "::set-output name GVSBUILD_SHA_SHORT::$GVSBUILD_SHA_SHORT"
+        echo "restore key will be"
+        echo ${{ runner.os }}-gvs-${{ steps.gvs_ver.outputs.GVSBUILD_SHA_SHORT }}
 
     - name: cache gvsbuild #TODO: Version based check
       id: cache-gvsbuild
