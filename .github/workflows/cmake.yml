@@ -24,7 +24,7 @@ jobs:
         key: ${{ runner.os }}-gvs
 
     - name: checkout gvsbuild
-      if: steps.cache-gvsbuild.outputs.cache-hit != 'true'
+      #if: steps.cache-gvsbuild.outputs.cache-hit != 'true'
       uses: actions/checkout@v3
       with:
         repository: wingtk/gvsbuild
@@ -32,7 +32,7 @@ jobs:
 
 
     - name: build gvsbuild
-      if: steps.cache-gvsbuild.outputs.cache-hit != 'true'
+      #if: steps.cache-gvsbuild.outputs.cache-hit != 'true'
       # builds GTK, which contains required dependencies pkg-config and lz4
       working-directory: ${{github.workspace}}/gvsbuild
       run: |
