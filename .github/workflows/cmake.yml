@@ -46,6 +46,7 @@ jobs:
       # builds GTK, which contains required dependencies pkg-config and lz4
       working-directory: ${{github.workspace}}/gvsbuild
       run: |
+        echo ${{ runner.os }}-gvs-${{ steps.gvs_ver.outputs.GVSBUILD_SHA_SHORT }}
         python ./build.py build --build-dir="${{github.workspace}}\\gtk" -p=x64 pkg-config lz4
 
 
