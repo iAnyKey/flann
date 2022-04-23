@@ -20,7 +20,7 @@ jobs:
       run: |
         $GVSBUILD_SHA=& git ls-remote https://github.com/wingtk/gvsbuild HEAD
         $GVSBUILD_SHA=$GVSBUILD_SHA.split()
-        $GVSBUILD_SHA_SHORT=$GVSBUILD_SHA.Substring(0,6)
+        $GVSBUILD_SHA_SHORT=$GVSBUILD_SHA[0].Substring(0,6)
         echo $GVSBUILD_SHA_SHORT >> $GITHUB_ENV
 
     - name: cache gvsbuild #TODO: Version based check
@@ -95,9 +95,9 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{github.workspace}}/gtk
-        key: ${{ runner.os }}-gvs
+        key: ${{ runner.os }}-gvs-${{ env.GVSBUILD_SHA_SHORT }}
 
-    - name: restorecache GTest #TODO: Version based check
+    - name: restore cache GTest #TODO: Version based check
       id: cache-gtest
       uses: actions/cache@v3
       with:
