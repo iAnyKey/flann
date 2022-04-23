@@ -31,7 +31,7 @@ jobs:
         key: ${{ runner.os }}-gvs-${{ env.GVSBUILD_SHA_SHORT }}
 
     - name: checkout gvsbuild
-      if: steps.cache-gvsbuild.outputs.cache-hit != 'true'
+      #if: steps.cache-gvsbuild.outputs.cache-hit != 'true'
       uses: actions/checkout@v3
       with:
         repository: wingtk/gvsbuild
@@ -39,7 +39,7 @@ jobs:
 
 
     - name: build gvsbuild
-      if: steps.cache-gvsbuild.outputs.cache-hit != 'true'
+      #if: steps.cache-gvsbuild.outputs.cache-hit != 'true'
       # builds GTK, which contains required dependencies pkg-config and lz4
       working-directory: ${{github.workspace}}/gvsbuild
       run: |
@@ -90,10 +90,26 @@ jobs:
     - name: checkout
       uses: actions/checkout@v3
 
+    - name: restore cache gvsbuild #TODO: Version based check
+      id: cache-gvsbuild
+      uses: actions/cache@v3
+      with:
+        path: ${{github.workspace}}/gtk
+        key: ${{ runner.os }}-gvs
+
+    - name: restorecache GTest #TODO: Version based check
+      id: cache-gtest
+      uses: actions/cache@v3
+      with:
+        path: ${{github.workspace}}/GTest
+        key: ${{ runner.os }}-gtest
+
     - name: Configure CMake for building FLANN
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
+        ls .
+        ls ..
         mkdir -F ./build && cd build
         cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DPKG_CONFIG_EXECUTABLE="${{github.workspace}}/gtk/gtk/x64/release/bin/pkg-config.exe" -DPKG_CONFIG_ROOT="${{github.workspace}}/gtk/gtk/x64/release/bin" -DGTEST_ROOT="${{github.workspace}}/GTest" --install-prefix=$pwd/../out_aftifacts
 
