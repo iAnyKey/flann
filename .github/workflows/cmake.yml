@@ -16,6 +16,15 @@ jobs:
   win_dependency-Pkg-Config:
     runs-on: windows-latest
     steps:
+    - name: Set the value
+      id: step_one
+      run: |
+        echo "action_state=yellow" >> $GITHUB_ENV
+    - name: Use the value
+      id: step_two
+      run: |
+        echo "${{ env.action_state }}" # This will output 'yellow'
+
     - name: retrieve current commit sha
       id:   gvs_ver
       run: |
@@ -46,7 +55,6 @@ jobs:
       # builds GTK, which contains required dependencies pkg-config and lz4
       working-directory: ${{github.workspace}}/gvsbuild
       run: |
-        echo ${{ runner.os }}-gvs-${{ steps.gvs_ver.outputs.GVSBUILD_SHA_SHORT }}
         python ./build.py build --build-dir="${{github.workspace}}\\gtk" -p=x64 pkg-config lz4
 
 
