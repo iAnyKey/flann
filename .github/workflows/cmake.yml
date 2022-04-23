@@ -16,12 +16,19 @@ jobs:
   win_dependency-Pkg-Config:
     runs-on: windows-latest
     steps:
+    - name: retrieve current commit sha
+      run: |
+        $GVSBUILD_SHA=& git ls-remote https://github.com/wingtk/gvsbuild HEAD
+        $GVSBUILD_SHA=$GVSBUILD_SHA.split()
+        $GVSBUILD_SHA_SHORT=$GVSBUILD_SHA.Substring(0,6)
+        echo $GVSBUILD_SHA_SHORT >> $GITHUB_ENV
+
     - name: cache gvsbuild #TODO: Version based check
       id: cache-gvsbuild
       uses: actions/cache@v3
       with:
-        path: ${{github.workspace}}/gtk
-        key: ${{ runner.os }}-gvs
+        path: ${{github.workspace}}/gtk 
+        key: ${{ runner.os }}-gvs-${{ env.GVSBUILD_SHA_SHORT }}
 
     - name: checkout gvsbuild
       if: steps.cache-gvsbuild.outputs.cache-hit != 'true'
@@ -36,7 +43,7 @@ jobs:
       # builds GTK, which contains required dependencies pkg-config and lz4
       working-directory: ${{github.workspace}}/gvsbuild
       run: |
-        python ./build.py build --build-dir=${{github.workspace}}/gtk -p=x64 pkg-config lz4
+        python ./build.py build --build-dir="${{github.workspace}}\\gtk" -p=x64 pkg-config lz4
         tree ${{github.workspace}}
 
 
