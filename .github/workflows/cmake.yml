@@ -151,14 +151,14 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{github.workspace}}/gtk
-        key: ${{ needs.win_dependency-GTest.outputs.cache-key }}
+        key: ${{ needs.win_dependency-Pkg-Config.outputs.cache-key }}
 
     - name: restore cache GTest
       id: cache-gtest
       uses: actions/cache@v3
       with:
         path: ${{github.workspace}}/GTest
-        key: ${{ needs.win_dependency-Pkg-Config.outputs.cache-key }}
+        key: ${{ needs.win_dependency-GTest.outputs.cache-key }}
 
     - name: restore cache HDF5
       id: cache-hdf5
