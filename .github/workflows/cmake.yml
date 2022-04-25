@@ -151,21 +151,21 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{github.workspace}}/gtk
-        key: ${{ win_dependency-GTest.outputs.cache-key }}
+        key: ${{ needs.win_dependency-GTest.outputs.cache-key }}
 
     - name: restore cache GTest
       id: cache-gtest
       uses: actions/cache@v3
       with:
         path: ${{github.workspace}}/GTest
-        key: ${{ win_dependency-Pkg-Config.outputs.cache-key }}
+        key: ${{ needs.win_dependency-Pkg-Config.outputs.cache-key }}
 
     - name: restore cache HDF5
       id: cache-hdf5
       uses: actions/cache@v3
       with:
         path: ${{github.workspace}}/HDF5
-        key: ${{ win_dependency-HDF5.outputs.cache-key }}
+        key: ${{ needs.win_dependency-HDF5.outputs.cache-key }}
 
     - name: Configure CMake for building FLANN
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
