@@ -24,9 +24,6 @@ jobs:
         $GVSBUILD_SHA_SHORT=$GVSBUILD_SHA[0].Substring(0,6)
         echo "::set-output name=sha_short::$GVSBUILD_SHA_SHORT"
 
-    - name: test  #TODO:remove
-      run: echo ${{ runner.os }}-gvs-${{ steps.gvsbuild-ver.outputs.sha_short }}
-
     - name: cache gvsbuild
       id: cache-gvsbuild
       uses: actions/cache@v3
@@ -63,9 +60,6 @@ jobs:
         $GTEST_SHA_SHORT=$GTEST_SHA[0].Substring(0,6)
         echo "::set-output name=sha_short::$GTEST_SHA_SHORT"
 
-    - name: test  #TODO:remove
-      run: echo ${{ runner.os }}-GTest-${{ steps.gtest-ver.outputs.sha_short }}
-
     - name: cache GTest
       id: cache-gtest
       uses: actions/cache@v3
@@ -74,7 +68,7 @@ jobs:
         key: ${{ runner.os }}-GTest-${{ steps.gtest-ver.outputs.sha_short }}
 
     - name: checkout GTest
-      #if: steps.cache-gtest.outputs.cache-hit != 'true'
+      if: steps.cache-gtest.outputs.cache-hit != 'true'
       uses: actions/checkout@v3
       with:
         repository: google/googletest
@@ -83,7 +77,7 @@ jobs:
     - name: build GTest
       # builds and installs the most recent version of the google test
       #        git clone https://github.com/google/googletest.git
-      #if: steps.cache-gtest.outputs.cache-hit != 'true'
+      if: steps.cache-gtest.outputs.cache-hit != 'true'
       working-directory: ${{github.workspace}}/googletest
       run: |
         tree .
@@ -105,9 +99,6 @@ jobs:
         $HDF5_SHA_SHORT=$HDF5_SHA[0].Substring(0,6)
         echo "::set-output name=sha_short::$HDF5_SHA_SHORT"
 
-    - name: test  #TODO:remove
-      run: echo ${{ runner.os }}-HDF5-${{ steps.hdf5-ver.outputs.sha_short }}
-
     - name: cache HDF5
       id: cache-hdf5
       uses: actions/cache@v3
@@ -116,7 +107,7 @@ jobs:
         key: ${{ runner.os }}-HDF5-${{ steps.gtest-ver.outputs.sha_short }}
 
     - name: checkout HDF5
-      #if: steps.cache-hdf5.outputs.cache-hit != 'true'
+      if: steps.cache-hdf5.outputs.cache-hit != 'true'
       uses: actions/checkout@v3
       with:
         repository: HDFGroup/hdf5
@@ -125,7 +116,7 @@ jobs:
     - name: build HDF5
       # builds and installs the most recent version of the google test
       #        git clone https://github.com/google/googletest.git
-      #if: steps.cache-hdf5.outputs.cache-hit != 'true'
+      if: steps.cache-hdf5.outputs.cache-hit != 'true'
       working-directory: ${{github.workspace}}/HDF5_
       run: |
         tree .
