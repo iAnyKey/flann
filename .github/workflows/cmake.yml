@@ -66,12 +66,12 @@ jobs:
     - name: test  #TODO:remove
       run: echo ${{ runner.os }}-GTest-${{ steps.gtest-ver.outputs.sha_short }}
 
-    - name: cache GTest #TODO: Version based check
+    - name: cache GTest
       id: cache-gtest
       uses: actions/cache@v3
       with:
         path: ${{github.workspace}}/GTest
-        key: ${{ runner.os }}-GTest-${{ steps.gtest-ver.outputs.sha_short }}_
+        key: ${{ runner.os }}-GTest-${{ steps.gtest-ver.outputs.sha_short }}
 
     - name: checkout GTest
       #if: steps.cache-gtest.outputs.cache-hit != 'true'
