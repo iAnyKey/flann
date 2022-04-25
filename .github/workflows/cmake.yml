@@ -15,6 +15,8 @@ jobs:
   # --  Pkg-Config  --
   win_dependency-Pkg-Config:
     runs-on: windows-latest
+    outputs:
+      cache-key: ${{ runner.os }}-gvs-${{ steps.gvsbuild-ver.outputs.sha_short }}
     steps:
     - name: retrieve current commit sha
       id: gvsbuild-ver
@@ -31,14 +33,12 @@ jobs:
         path: ${{github.workspace}}/gtk 
         key: ${{ runner.os }}-gvs-${{ steps.gvsbuild-ver.outputs.sha_short }}
 
-
     - name: checkout gvsbuild
       if: steps.cache-gvsbuild.outputs.cache-hit != 'true'
       uses: actions/checkout@v3
       with:
         repository: wingtk/gvsbuild
         path: gvsbuild
-
 
     - name: build gvsbuild
       if: steps.cache-gvsbuild.outputs.cache-hit != 'true'
@@ -51,6 +51,8 @@ jobs:
   # --  GTest  --
   win_dependency-GTest:
     runs-on: windows-latest
+    outputs:
+      cache-key: ${{ runner.os }}-GTest-${{ steps.gtest-ver.outputs.sha_short }}
     steps:
     - name: retrieve current commit sha
       id: gtest-ver
@@ -90,6 +92,8 @@ jobs:
   # --  HDF5  --
   win_dependency-HDF5:
     runs-on: windows-latest
+    outputs:
+      cache-key: ${{ runner.os }}-HDF5-${{ steps.hdf5-ver.outputs.sha_short }}
     steps:
     - name: retrieve current commit sha
       id: hdf5-ver
@@ -147,28 +151,28 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{github.workspace}}/gtk
-        key: ${{ runner.os }}-gvs-${{ steps.gvsbuild-ver.outputs.sha_short }}
+        key: ${{ win_dependency-GTest.outputs.cache-key }}
 
     - name: restore cache GTest
       id: cache-gtest
       uses: actions/cache@v3
       with:
         path: ${{github.workspace}}/GTest
-        key: ${{ runner.os }}-GTest-${{ steps.gtest-ver.outputs.sha_short }}
+        key: ${{ win_dependency-Pkg-Config.outputs.cache-key }}
 
     - name: restore cache HDF5
       id: cache-hdf5
       uses: actions/cache@v3
       with:
         path: ${{github.workspace}}/HDF5
-        key: ${{ runner.os }}-HDF5-${{ steps.hdf5-ver.outputs.sha_short }}
+        key: ${{ win_dependency-HDF5.outputs.cache-key }}
 
     - name: Configure CMake for building FLANN
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
         mkdir -F ./build && cd build
-        cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DPKG_CONFIG_EXECUTABLE="${{github.workspace}}/gtk/gtk/x64/release/bin/pkg-config.exe" -DPKG_CONFIG_ROOT="${{github.workspace}}/gtk/gtk/x64/release/bin" -DGTEST_ROOT="${{github.workspace}}/GTest" -DHDF5_ROOT=""${{github.workspace}}/HDF5" --install-prefix=$pwd/../out_aftifacts
+        cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DPKG_CONFIG_EXECUTABLE="${{github.workspace}}/gtk/gtk/x64/release/bin/pkg-config.exe" -DPKG_CONFIG_ROOT="${{github.workspace}}/gtk/gtk/x64/release/bin" -DGTEST_ROOT="${{github.workspace}}/GTest" -DHDF5_ROOT="${{github.workspace}}/HDF5" --install-prefix=$pwd/../out_aftifacts
         cmake -L ..
 #FIXME:remove
 
