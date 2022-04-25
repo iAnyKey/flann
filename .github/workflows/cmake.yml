@@ -104,7 +104,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{github.workspace}}/HDF5
-        key: ${{ runner.os }}-HDF5-${{ steps.gtest-ver.outputs.sha_short }}
+        key: ${{ runner.os }}-HDF5-${{ steps.hdf5-ver.outputs.sha_short }}
 
     - name: checkout HDF5
       if: steps.cache-hdf5.outputs.cache-hit != 'true'
@@ -161,7 +161,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{github.workspace}}/HDF5
-        key: ${{ runner.os }}-HDF5-${{ steps.gtest-ver.outputs.sha_short }}
+        key: ${{ runner.os }}-HDF5-${{ steps.hdf5-ver.outputs.sha_short }}
 
     - name: Configure CMake for building FLANN
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
