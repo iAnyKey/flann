@@ -93,6 +93,48 @@ jobs:
         cmake --install .
         tree ${{github.workspace}}
 
+  # --  HDF5  --
+  win_dependency-HDF5:
+    runs-on: windows-latest
+    steps:
+    - name: retrieve current commit sha
+      id: hdf5-ver
+      run: |
+        $HDF5_SHA=& git ls-remote https://github.com/HDFGroup/hdf5 HEAD
+        $HDF5_SHA=$HDF5_SHA.split()
+        $HDF5_SHA_SHORT=$HDF5_SHA[0].Substring(0,6)
+        echo "::set-output name=sha_short::$HDF5_SHA_SHORT"
+
+    - name: test  #TODO:remove
+      run: echo ${{ runner.os }}-HDF5-${{ steps.hdf5-ver.outputs.sha_short }}
+
+    - name: cache HDF5
+      id: cache-hdf5
+      uses: actions/cache@v3
+      with:
+        path: ${{github.workspace}}/HDF5
+        key: ${{ runner.os }}-HDF5-${{ steps.gtest-ver.outputs.sha_short }}
+
+    - name: checkout HDF5
+      #if: steps.cache-hdf5.outputs.cache-hit != 'true'
+      uses: actions/checkout@v3
+      with:
+        repository: HDFGroup/hdf5
+        path: HDF5_
+
+    - name: build HDF5
+      # builds and installs the most recent version of the google test
+      #        git clone https://github.com/google/googletest.git
+      #if: steps.cache-hdf5.outputs.cache-hit != 'true'
+      working-directory: ${{github.workspace}}/HDF5_
+      run: |
+        tree .
+        mkdir -F ./build && cd ./build
+        cmake .. --install-prefix=${{github.workspace}}/HDF5
+        cmake --build . --config Release
+        cmake --install .
+        tree ${{github.workspace}}
+
   # ---[ WINDOWS BUILD ]---
   build-windows:
   # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
@@ -107,6 +149,7 @@ jobs:
     - name: checkout
       uses: actions/checkout@v3
 
+    # restore all cached dependencies
     - name: restore cache gvsbuild
       id: cache-gvsbuild
       uses: actions/cache@v3
@@ -121,16 +164,22 @@ jobs:
         path: ${{github.workspace}}/GTest
         key: ${{ runner.os }}-GTest-${{ steps.gtest-ver.outputs.sha_short }}
 
+    - name: restore cache HDF5
+      id: cache-hdf5
+      uses: actions/cache@v3
+      with:
+        path: ${{github.workspace}}/HDF5
+        key: ${{ runner.os }}-HDF5-${{ steps.gtest-ver.outputs.sha_short }}
+
     - name: Configure CMake for building FLANN
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
         mkdir -F ./build && cd build
-        cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DPKG_CONFIG_EXECUTABLE="${{github.workspace}}/gtk/gtk/x64/release/bin/pkg-config.exe" -DPKG_CONFIG_ROOT="${{github.workspace}}/gtk/gtk/x64/release/bin" -DGTEST_ROOT="${{github.workspace}}/GTest" --install-prefix=$pwd/../out_aftifacts
+        cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DPKG_CONFIG_EXECUTABLE="${{github.workspace}}/gtk/gtk/x64/release/bin/pkg-config.exe" -DPKG_CONFIG_ROOT="${{github.workspace}}/gtk/gtk/x64/release/bin" -DGTEST_ROOT="${{github.workspace}}/GTest" -DHDF5_ROOT=""${{github.workspace}}/HDF5" --install-prefix=$pwd/../out_aftifacts
 
     - name: Build
       working-directory: ${{github.workspace}}/build
-      # Build your program with the given configuration
       run: cmake --build . --config ${{env.BUILD_TYPE}} 
 
     - name: Test
@@ -162,7 +211,7 @@ jobs:
         with:
           name: flann_x64_${{github.sha}}
           
-      - name: create new release
+      - name: create new release draft
         id: create_new_release
         uses: actions/create-release@v1
         with:
