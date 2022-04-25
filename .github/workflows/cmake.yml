@@ -177,6 +177,8 @@ jobs:
       run: |
         mkdir -F ./build && cd build
         cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DPKG_CONFIG_EXECUTABLE="${{github.workspace}}/gtk/gtk/x64/release/bin/pkg-config.exe" -DPKG_CONFIG_ROOT="${{github.workspace}}/gtk/gtk/x64/release/bin" -DGTEST_ROOT="${{github.workspace}}/GTest" -DHDF5_ROOT=""${{github.workspace}}/HDF5" --install-prefix=$pwd/../out_aftifacts
+        cmake -L ..
+#FIXME:remove
 
     - name: Build
       working-directory: ${{github.workspace}}/build
