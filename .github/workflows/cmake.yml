@@ -23,12 +23,9 @@ jobs:
         $GVSBUILD_SHA=$GVSBUILD_SHA.split()
         $GVSBUILD_SHA_SHORT=$GVSBUILD_SHA[0].Substring(0,6)
         echo "::set-output name=sha_short::$GVSBUILD_SHA_SHORT"
-        echo "gvsbuild_sha_short=$GVSBUILD_SHA_SHORT" >> $GITHUB_ENV
-        echo "restore key will be $GVSBUILD_SHA_SHORT"
 
-    - name: test
+    - name: test  #TODO:remove
       run: echo ${{ runner.os }}-gvs-${{ steps.gvsbuild-ver.outputs.sha_short }}
-
 
     - name: cache gvsbuild
       id: cache-gvsbuild
@@ -39,7 +36,7 @@ jobs:
 
 
     - name: checkout gvsbuild
-      #if: steps.cache-gvsbuild.outputs.cache-hit != 'true'
+      if: steps.cache-gvsbuild.outputs.cache-hit != 'true'
       uses: actions/checkout@v3
       with:
         repository: wingtk/gvsbuild
@@ -47,7 +44,7 @@ jobs:
 
 
     - name: build gvsbuild
-      #if: steps.cache-gvsbuild.outputs.cache-hit != 'true'
+      if: steps.cache-gvsbuild.outputs.cache-hit != 'true'
       # builds GTK, which contains required dependencies pkg-config and lz4
       working-directory: ${{github.workspace}}/gvsbuild
       run: |
@@ -58,25 +55,38 @@ jobs:
   win_dependency-GTest:
     runs-on: windows-latest
     steps:
+    - name: retrieve current commit sha
+      id: gtest-ver
+      run: |
+        $GTEST_SHA=& git ls-remote https://github.com/google/googletest HEAD
+        $GTEST_SHA=$GTEST_SHA.split()
+        $GTEST_SHA=$GTEST_SHA[0].Substring(0,6)
+        echo "::set-output name=sha_short::$GTEST_SHA_SHORT"
+
+    - name: test  #TODO:remove
+      run: echo ${{ runner.os }}-GTest-${{ steps.gtest-ver.outputs.sha_short }}
+
     - name: cache GTest #TODO: Version based check
       id: cache-gtest
       uses: actions/cache@v3
       with:
         path: ${{github.workspace}}/GTest
-        key: ${{ runner.os }}-gtest
+        key: ${{ runner.os }}-GTest-${{ steps.gtest-ver.outputs.sha_short }}_
 
     - name: checkout GTest
-      if: steps.cache-gtest.outputs.cache-hit != 'true'
+      #if: steps.cache-gtest.outputs.cache-hit != 'true'
       uses: actions/checkout@v3
       with:
         repository: google/googletest
+        path: googletest
 
     - name: build GTest
       # builds and installs the most recent version of the google test
       #        git clone https://github.com/google/googletest.git
-      if: steps.cache-gtest.outputs.cache-hit != 'true'
+      #if: steps.cache-gtest.outputs.cache-hit != 'true'
       working-directory: ${{github.workspace}}/googletest
       run: |
+        tree .
         mkdir -F ./build && cd ./build
         cmake .. --install-prefix=${{github.workspace}}/GTest
         cmake --build . --config Release
