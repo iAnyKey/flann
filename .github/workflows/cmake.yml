@@ -60,7 +60,7 @@ jobs:
       run: |
         $GTEST_SHA=& git ls-remote https://github.com/google/googletest HEAD
         $GTEST_SHA=$GTEST_SHA.split()
-        $GTEST_SHA=$GTEST_SHA[0].Substring(0,6)
+        $GTEST_SHA_SHORT=$GTEST_SHA[0].Substring(0,6)
         echo "::set-output name=sha_short::$GTEST_SHA_SHORT"
 
     - name: test  #TODO:remove
@@ -107,19 +107,19 @@ jobs:
     - name: checkout
       uses: actions/checkout@v3
 
-    - name: restore cache gvsbuild #TODO: Version based check
+    - name: restore cache gvsbuild
       id: cache-gvsbuild
       uses: actions/cache@v3
       with:
         path: ${{github.workspace}}/gtk
         key: ${{ runner.os }}-gvs-${{ steps.gvsbuild-ver.outputs.sha_short }}
 
-    - name: restore cache GTest #TODO: Version based check
+    - name: restore cache GTest
       id: cache-gtest
       uses: actions/cache@v3
       with:
         path: ${{github.workspace}}/GTest
-        key: ${{ runner.os }}-gtest
+        key: ${{ runner.os }}-GTest-${{ steps.gtest-ver.outputs.sha_short }}
 
     - name: Configure CMake for building FLANN
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
