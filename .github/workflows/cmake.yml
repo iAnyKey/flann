@@ -144,6 +144,7 @@ jobs:
     needs: 
       - win_dependency-Pkg-Config
       - win_dependency-GTest
+      - win_dependency-HDF5
 
     steps:
     - name: checkout
